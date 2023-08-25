@@ -1,9 +1,10 @@
 import gitHub from './db.js';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import gitHubQuery from './Query';
 
 function App() {
   const [username, setUsername] = useState('');
+  const effectRan = useRef(false);
 
   const fetchData = useCallback(() => {
     fetch(gitHub.baseURL, {
@@ -20,8 +21,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-    return () => {};
+    if (effectRan.current === false) {
+      fetchData();
+      return () => {
+        effectRan.current = true;
+      };
+    }
   }, [fetchData]);
 
   return (
