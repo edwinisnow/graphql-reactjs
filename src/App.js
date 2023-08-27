@@ -2,12 +2,13 @@ import gitHub from './db.js';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import gitHubQuery from './Query';
 import RepoInfo from './RepoInfo.js';
+import SearchBox from './SearchBox.js';
 
 function App() {
   const [username, setUsername] = useState('');
   const [repoList, setRepoList] = useState(null);
   const [pageCount, setPageCount] = useState(10);
-  const [queryString, setQueryString] = useState('slides');
+  const [queryString, setQueryString] = useState('');
   const [totalCount, setTotalCount] = useState(null);
 
   const effectRan = useRef(false);
@@ -32,12 +33,13 @@ function App() {
   }, [pageCount, queryString]);
 
   useEffect(() => {
-    if (effectRan.current === false) {
-      fetchData();
-      return () => {
-        effectRan.current = true;
-      };
-    }
+    fetchData();
+    // if (effectRan.current === false) {
+    //   fetchData();
+    //   return () => {
+    //     effectRan.current = true;
+    //   };
+    // }
   }, [fetchData]);
 
   return (
@@ -46,12 +48,23 @@ function App() {
         <i className='bi bi-diagram-2-fill'></i>Repos
       </h1>
       <p>Hey there {username}</p>
-      <p>
+      <SearchBox
+        totalCount={totalCount}
+        pageCount={pageCount}
+        queryString={queryString}
+        onTotalChange={(myCount) => {
+          setPageCount(myCount);
+        }}
+        onQueryChange={(myString) => {
+          setQueryString(myString);
+        }}
+      />
+      {/* <p>
         <b>Search for: </b>
         {queryString} | <b>Items per page: </b>
         {pageCount} | <b>Total results: </b>
         {totalCount}
-      </p>
+      </p> */}
       {repoList && (
         <ul className='list-group list-group-flush'>
           {repoList.map((repo) => (
