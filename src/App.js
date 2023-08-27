@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import gitHubQuery from './Query';
 import RepoInfo from './RepoInfo.js';
 import SearchBox from './SearchBox.js';
+import NavButtons from './NavButtons.js';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -76,6 +77,7 @@ function App() {
           setQueryString(myString);
         }}
       />
+
       {/* <p>
         <b>Search for: </b>
         {queryString} | <b>Items per page: </b>
@@ -89,6 +91,16 @@ function App() {
           ))}
         </ul>
       )}
+      <NavButtons
+        start={startCursor}
+        end={endCursor}
+        next={hasNextPage}
+        previous={hasPreviousPage}
+        onPage={(myKeyword, myString) => {
+          setPaginationKeyword(myKeyword);
+          setPaginationString(myString);
+        }}
+      />
     </div>
   );
 }
