@@ -10,11 +10,19 @@ function App() {
   const [pageCount, setPageCount] = useState(10);
   const [queryString, setQueryString] = useState('');
   const [totalCount, setTotalCount] = useState(null);
+  const [startCursor, setStartCursor] = useState(null);
+  const [endCursor, setEndCursor] = useState(null);
+  const [hasPreviousPage, setHasPreviousPage] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [paginationKeyword, setPaginationKeyword] = useState('first');
+  const [paginationString, setPaginationString] = useState('');
 
   const effectRan = useRef(false);
 
   const fetchData = useCallback(() => {
-    const queryText = JSON.stringify(gitHubQuery(pageCount, queryString));
+    const queryText = JSON.stringify(
+      gitHubQuery(pageCount, queryString, paginationKeyword, paginationString)
+    );
     fetch(gitHub.baseURL, {
       method: 'POST',
       headers: gitHub.headers,
@@ -23,14 +31,23 @@ function App() {
       .then((response) => response.json())
       .then((data) => {
         const viewer = data.data.viewer;
-        const repos = data.data.search.nodes;
+        const repos = data.data.search.edges;
         const total = data.data.search.repositoryCount;
+        const start = data.data.search.pageInfo?.startCursor;
+        const end = data.data.search.pageInfo?.endCursor;
+        const next = data.data.search.pageInfo?.hasNextPage;
+        const prev = data.data.search.pageInfo?.hasPreviousPage;
+
         setUsername(viewer.name);
         setRepoList(repos);
         setTotalCount(total);
+        setStartCursor(start);
+        setEndCursor(end);
+        setHasPreviousPage(prev);
+        setHasNextPage(next);
       })
       .catch((err) => console.log(err));
-  }, [pageCount, queryString]);
+  }, [pageCount, queryString, paginationString, paginationKeyword]);
 
   useEffect(() => {
     fetchData();
@@ -68,7 +85,7 @@ function App() {
       {repoList && (
         <ul className='list-group list-group-flush'>
           {repoList.map((repo) => (
-            <RepoInfo key={repo.id} repo={repo} />
+            <RepoInfo key={repo.node.id} repo={repo.node} />
           ))}
         </ul>
       )}

@@ -1,4 +1,9 @@
-const gitHubQuery = (pageCount, queryString) => {
+const gitHubQuery = (
+  pageCount,
+  queryString,
+  paginationKeyword,
+  paginationString
+) => {
   return {
     query: `
     {
@@ -8,20 +13,31 @@ const gitHubQuery = (pageCount, queryString) => {
       search(
         query: "${queryString} user:planetoftheweb sort:updated-desc"
         type: REPOSITORY
-        first: ${pageCount}
+        ${paginationKeyword}: ${pageCount},
+        ${paginationString},
       ) {
         repositoryCount
-        nodes {
-          ... on Repository {
-            name
-            description
-            id
-            url
-            licenseInfo {
-              spdxId
+        edges { 
+          cursor
+          node {
+            ... on Repository {
+              name
+              description
+              id
+              url
+              licenseInfo {
+                spdxId
+              }
+              viewerSubscription
             }
-            viewerSubscription
           }
+
+        }
+        pageInfo{
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
         }
       }
     }
