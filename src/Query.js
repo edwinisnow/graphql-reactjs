@@ -7,7 +7,7 @@ const gitHubQuery = {
     search(
       query: "tutorial user:planetoftheweb sort:updated-desc"
       type: REPOSITORY
-      first: 20
+      first: 100
     ) {
       nodes {
         ... on Repository {
@@ -15,6 +15,9 @@ const gitHubQuery = {
           description
           id
           url
+          licenseInfo {
+            spdxId
+          }
           viewerSubscription
         }
       }
